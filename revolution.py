@@ -58,11 +58,17 @@ class ArrowBunch ():
     RV_SCALE = SCALE
     AX_SCALE = 4e10
 
-    star_v   = attach_arrow(star,   "p", scale=1e7/star.mass/2,   shaftwidth=0.3e10, headwidth=0.6e10, headlength=0.6e10, color=color.green)
-    planet_v = attach_arrow(planet, "p", scale=1e7/planet.mass/2, shaftwidth=0.3e10, headwidth=0.6e10, headlength=0.6e10, color=color.green)
+    SW   = 0.5e10
+    HEAD = 1.0e10
 
-    star_rv   = arrow(pos=vec(0, 0, 0), axis=vec(0, 0, 0), visible=False)
-    planet_rv = arrow(pos=vec(0, 0, 0), axis=vec(0, 0, 0), visible=False)
+    star_v   = attach_arrow(star,   "p", scale=SCALE/star.mass,   shaftwidth=SW, headwidth=HEAD, headlength=HEAD, color=color.green)
+    planet_v = attach_arrow(planet, "p", scale=SCALE/planet.mass, shaftwidth=SW, headwidth=HEAD, headlength=HEAD, color=color.green)
+
+    star_rv   = arrow(pos=vec(0, 0, 0), axis=vec(0, 0, 0), shaftwidth=SW, headwidth=HEAD, headlength=HEAD, visible=False)
+    planet_rv = arrow(pos=vec(0, 0, 0), axis=vec(0, 0, 0), shaftwidth=SW, headwidth=HEAD, headlength=HEAD, visible=False)
+    
+    star_rv_big   = arrow(pos=vec(0, 0, 0), axis=vec(0, 0, 0), visible=False)
+    planet_rv_big = arrow(pos=vec(0, 0, 0), axis=vec(0, 0, 0), visible=False)
 
     star_v0   = arrow(pos=vec(0, 0, 0), axis=vec(0, 0, 0), color=color.red, visible=False)
     planet_v0 = arrow(pos=vec(0, 0, 0), axis=vec(0, 0, 0), color=color.red, visible=False)
@@ -83,6 +89,10 @@ class ArrowBunch ():
     def rv_on_off (self, on_off):
         self.star_rv.visible   = on_off
         self.planet_rv.visible = on_off
+    
+    def big_rv_on_off (self, on_off):
+        self.star_rv_big.visible   = on_off
+        self.planet_rv_big.visible = on_off
 
 arr = ArrowBunch()
 arr.v_on_off(OFF)
@@ -301,12 +311,17 @@ def set_rv_arrow(r):
 
 def set_rv_arrow_size (r):
     global arr
+    size = 7
 
     if r.checked:
-        arr.RV_SCALE = SCALE*2
+        arr.rv_on_off(OFF)
+        arr.big_rv_on_off(ON)
+        arr.RV_SCALE *= size
     
     else:
-        arr.RV_SCALE = SCALE
+        arr.rv_on_off(ON)
+        arr.big_rv_on_off(OFF)
+        arr.RV_SCALE /= size
 
 chk_rv = checkbox(pos=print_anchor, text='radial velocity arrow      ', checked=DEFAULT, bind=set_rv_arrow)
 checkbox(pos=print_anchor, text='bigger', checked=DEFAULT, bind=set_rv_arrow_size)
@@ -563,6 +578,9 @@ while True:
         # arrow
         draw_raial_v(star,   arr.star_rv)
         draw_raial_v(planet, arr.planet_rv)        
+        
+        draw_raial_v(star,   arr.star_rv_big)
+        draw_raial_v(planet, arr.planet_rv_big)        
         
         
         # graph
