@@ -9,7 +9,7 @@ scene.title  = "<b>revolution</b>\n\n"
 
 G = 6.7e-11
 
-
+수정수정수정수정수정수정수정수정수정수정수정수정수정수정수정수정수정수정
 
 # star / planet
 star   = sphere(pos=vec(-1e11, 0, 0),  radius=2e10, color=color.yellow, make_trail=True)
