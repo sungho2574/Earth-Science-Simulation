@@ -332,6 +332,21 @@ scene.append_to_caption('\n\n\n')
 # ===============================================================================
 scene.append_to_caption('<b>new star system</b>\n\n')
 
+def connect_sld_text (sld, wt):
+    sld.conn_text = wt
+
+def set_sld_text (s):
+    s.conn_text.text = sld_text(s)
+    
+def set_ang_text (s):
+    s.conn_text.text = ang_text(s)
+
+def sld_text (s):
+    return '{:e}'.format(s.value * s.ratio)
+
+def ang_text (s):
+    return '{:03.0f}'.format(s.value * s.ratio)
+
 
 
 # distance between the two planets
@@ -343,13 +358,11 @@ VAL  = 2.5e11
 
 scene.append_to_caption('distance: ')
 
-def set_dist (s):
-    wt_dist.text = '{:e}'.format(s.value/1000)
+sld_dist = slider(min=MIN, max=MAX, step=STEP, value=VAL, length=220, bind=set_sld_text, right=15, ratio=1/1000)
+wt_dist = wtext(text=sld_text(sld_dist))
+connect_sld_text(sld_dist, wt_dist)
 
-sld_dist = slider(min=MIN, max=MAX, step=STEP, value=VAL, length=220, bind=set_dist, right=15)
-wt_dist = wtext(text='{:e}'.format(sld_dist.value/1000))
 scene.append_to_caption(' km')
-
 scene.append_to_caption('\n\n')
 
 
@@ -365,25 +378,22 @@ VAL2 = 1e4 * 2
 
 scene.append_to_caption('star:\t\tv\t= ')
 
-def set_star_v (s):
-    wt_star_v.text = '{:e}'.format(s.value/1000*3600)
+sld_star_v = slider(min=MIN, max=MAX, value=VAL1, length=220, bind=set_sld_text, right=15, ratio=1/1000*3600)
+wt_star_v = wtext(text=sld_text(sld_star_v))
+connect_sld_text(sld_star_v, wt_star_v)
 
-sld_star_v = slider(min=MIN, max=MAX, value=VAL1, length=220, bind=set_star_v, right=15)
-wt_star_v = wtext(text='{:e}'.format(sld_star_v.value/1000*3600))
 scene.append_to_caption(' km/h')
-
-
 scene.append_to_caption('\t\t')
+
+
+
 scene.append_to_caption('planet:\t\tv\t= ')
 
+sld_planet_v = slider(min=MIN, max=MAX, value=VAL2, length=220, bind=set_sld_text, right=15, ratio=1/1000*3600)
+wt_planet_v = wtext(text=sld_text(sld_planet_v))
+connect_sld_text(sld_planet_v, wt_planet_v)
 
-def set_planet_v (s):
-    wt_planet_v.text = '{:e}'.format(s.value/1000*3600)
-
-sld_planet_v = slider(min=MIN, max=MAX, value=VAL2, length=220, bind=set_planet_v, right=15)
-wt_planet_v = wtext(text='{:e}'.format(sld_planet_v.value/1000*3600))
 scene.append_to_caption(' km/h')
-
 scene.append_to_caption('\n\n')
 
 
@@ -399,25 +409,22 @@ VAL2 = 180
 
 scene.append_to_caption('\t\tang\t= ')
 
-def set_star_ang (s):
-    wt_star_ang.text = '{:03.0f}'.format(s.value)
+sld_star_ang = slider(min=MIN, max=MAX, step=STEP, value=VAL1, length=220, bind=set_ang_text, right=15, ratio=1)
+wt_star_ang = wtext(text=ang_text(sld_star_ang))
+connect_sld_text(sld_star_ang, wt_star_ang)
 
-sld_star_ang = slider(min=MIN, max=MAX, step=STEP, value=VAL1, length=220, bind=set_star_ang, right=15)
-wt_star_ang = wtext(text='{:03.0f}'.format(sld_star_ang.value))
 scene.append_to_caption(' degree')
-
-
 scene.append_to_caption('\t\t')
+
+
+
 scene.append_to_caption('\t\t\t\t\tang\t= ')
 
+sld_planet_ang = slider(min=MIN, max=MAX, step=STEP, value=VAL2, length=220, bind=set_ang_text, right=15, ratio=1)
+wt_planet_ang = wtext(text=ang_text(sld_planet_ang))
+connect_sld_text(sld_planet_ang, wt_star_ang)
 
-def set_planet_ang (s):
-    wt_planet_ang.text = '{:03.0f}'.format(s.value)
-
-sld_planet_ang = slider(min=MIN, max=MAX, step=STEP, value=VAL2, length=220, bind=set_planet_ang, right=15)
-wt_planet_ang = wtext(text='{:03.0f}'.format(sld_planet_ang.value))
 scene.append_to_caption(' degree')
-
 scene.append_to_caption('\n\n')
 
 
@@ -433,25 +440,21 @@ VAL2 = 1e30
 
 scene.append_to_caption('\t\tm\t= ')
 
-def set_star_m (s):
-    wt_star_m.text = '{:e}'.format(s.value/1000)
+sld_star_m = slider(min=MIN, max=MAX, step=STEP, value=VAL1, length=220, bind=set_sld_text, right=15, ratio=1/1000)
+wt_star_m = wtext(text=sld_text(sld_star_m))
+connect_sld_text(sld_star_m, wt_star_m)
 
-sld_star_m = slider(min=MIN, max=MAX, step=STEP, value=VAL1, length=220, bind=set_star_m, right=15)
-wt_star_m = wtext(text='{:e}'.format(sld_star_m.value/1000))
 scene.append_to_caption(' Ton')
-
-
 scene.append_to_caption('\t\t')
+
+
 scene.append_to_caption('\t\t\tm\t= ')
 
+sld_planet_m = slider(min=MIN, max=MAX, step=STEP, value=VAL2, length=220, bind=set_sld_text, right=15, ratio=1/1000)
+wt_planet_m = wtext(text=sld_text(sld_planet_m))
+connect_sld_text(sld_planet_m, wt_planet_m)
 
-def set_planet_m (s):
-    wt_planet_m.text = '{:e}'.format(s.value/1000)
-
-sld_planet_m = slider(min=MIN, max=MAX, step=STEP, value=VAL2, length=220, bind=set_planet_m, right=15)
-wt_planet_m = wtext(text='{:e}'.format(sld_planet_m.value/1000))
 scene.append_to_caption(' Ton')
-
 scene.append_to_caption('\n\n')
 
 
@@ -467,25 +470,21 @@ VAL2 = 1e10
 
 scene.append_to_caption('\t\tr\t= ')
 
-def set_star_r (s):
-    wt_star_r.text = '{:e}'.format(s.value/1000)
+sld_star_r = slider(min=MIN, max=MAX, step=STEP, value=VAL1, length=220, bind=set_sld_text, right=15, ratio=1/1000)
+wt_star_r = wtext(text=sld_text(sld_star_r))
+connect_sld_text(sld_star_r, wt_star_r)
 
-sld_star_r = slider(min=MIN, max=MAX, step=STEP, value=VAL1, length=220, bind=set_star_r, right=15)
-wt_star_r = wtext(text='{:e}'.format(sld_star_r.value/1000))
 scene.append_to_caption(' km')
-
-
 scene.append_to_caption('\t\t')
+
+
 scene.append_to_caption('\t\t\t\tr\t= ')
 
+sld_planet_r = slider(min=MIN, max=MAX, step=STEP, value=VAL2, length=220, bind=set_sld_text, right=15, ratio=1/1000)
+wt_planet_r = wtext(text=sld_text(sld_planet_r))
+connect_sld_text(sld_planet_r, wt_planet_r)
 
-def set_planet_r (s):
-    wt_planet_r.text = '{:e}'.format(s.value/1000)
-
-sld_planet_r = slider(min=MIN, max=MAX, step=STEP, value=VAL2, length=220, bind=set_planet_r, right=15)
-wt_planet_r = wtext(text='{:e}'.format(sld_planet_r.value/1000))
 scene.append_to_caption(' km')
-
 scene.append_to_caption('\n\n')
 scene.append_to_caption('\n')
 
