@@ -12,6 +12,7 @@ G = 6.7e-11
 ON  = True
 OFF = False
 
+SCALE = 1e7/2
 
 
 # star / planet
@@ -45,8 +46,12 @@ light = local_light(pos=star.pos, color=star.color)
 center = sphere(pos=vec(-0.16e11, 0, 0), radius=0.3e10, color=color.yellow)
 
 
+
 # arrow
 class ArrowBunch ():
+    RV_SCALE = SCALE
+    AX_SCALE = 4e10
+
     star_v   = attach_arrow(star,   "p", scale=1e7/star.mass/2,   shaftwidth=0.3e10, headwidth=0.6e10, headlength=0.6e10, color=color.green)
     planet_v = attach_arrow(planet, "p", scale=1e7/planet.mass/2, shaftwidth=0.3e10, headwidth=0.6e10, headlength=0.6e10, color=color.green)
 
@@ -56,10 +61,9 @@ class ArrowBunch ():
     star_v0   = arrow(pos=vec(0, 0, 0), axis=vec(0, 0, 0), color=color.red, visible=False)
     planet_v0 = arrow(pos=vec(0, 0, 0), axis=vec(0, 0, 0), color=color.red, visible=False)
 
-    SCALE = 4e10
-    x_axis = arrow(pos=vec(0, 0, 0), axis=vec(SCALE, 0, 0),  color=color.white, visible=False)
-    y_axis = arrow(pos=vec(0, 0, 0), axis=vec(0, SCALE, 0),  color=color.white, visible=False)
-    z_axis = arrow(pos=vec(0, 0, 0), axis=vec(0, 0, -SCALE), color=color.red,   visible=False)
+    x_axis = arrow(pos=vec(0, 0, 0), axis=vec(AX_SCALE, 0, 0),  color=color.white, visible=False)
+    y_axis = arrow(pos=vec(0, 0, 0), axis=vec(0, AX_SCALE, 0),  color=color.white, visible=False)
+    z_axis = arrow(pos=vec(0, 0, 0), axis=vec(0, 0, -AX_SCALE), color=color.red,   visible=False)
 
     def v_on_off (self, on_off):
         if on_off:
@@ -76,6 +80,7 @@ class ArrowBunch ():
 
 arr = ArrowBunch()
 arr.v_on_off(OFF)
+
 
 
 # Exit
@@ -177,10 +182,9 @@ def apply (b):
 
     star.p   = star_v   * star.mass
     planet.p = planet_v * planet.mass
-        
+    
     
     # apply v arrow
-    SCALE = 1e7/2
     if not running:
         arr.star_v0.visible = True
         arr.star_v0.pos     = star.pos
@@ -264,11 +268,10 @@ scene.append_to_caption('\n\n')
 # radial velocity arrow
 # ===============================================================================
 DEFAULT = False
-SCALE = 1e7/2
 
 def draw_raial_v (ball, arrow):
     arrow.pos = ball.pos
-    arrow.axis = vec(0, 0, ball.p.z/ball.mass) * SCALE
+    arrow.axis = vec(0, 0, ball.p.z/ball.mass) * arr.RV_SCALE
 
     if (arrow.axis.z > 0):
         arrow.color = color.blue
@@ -286,13 +289,13 @@ def set_rv_arrow(r):
         arr.rv_on_off(OFF)
 
 def set_rv_arrow_size (r):
-    global SCALE
+    global arr
 
     if r.checked:
-        SCALE = 1e8/2
+        arr.RV_SCALE = SCALE*2
     
     else:
-        SCALE = 1e7/2
+        arr.RV_SCALE = SCALE
 
 chk_rv = checkbox(text='radial velocity arrow      ', checked=DEFAULT, bind=set_rv_arrow)
 
@@ -483,7 +486,8 @@ sld_planet_r = slider(min=MIN, max=MAX, step=STEP, value=VAL2, length=220, bind=
 wt_planet_r = wtext(text='{:e}'.format(sld_planet_r.value/1000))
 scene.append_to_caption(' km')
 
-scene.append_to_caption('\n\n\n')
+scene.append_to_caption('\n\n')
+scene.append_to_caption('\n')
 
 
 
