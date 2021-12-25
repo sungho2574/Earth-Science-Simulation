@@ -21,6 +21,7 @@ OFF = False
 SCALE = 1e7/2
 
 
+
 # star / planet
 star   = sphere(pos=vec(-1e11, 0, 0),  mass=2e30, radius=2e10, color=color.yellow, make_trail=True)
 planet = sphere(pos=vec(1.5e11, 0, 0), mass=1e30, radius=1e10, color=color.white,  make_trail=True)
@@ -90,7 +91,7 @@ class ArrowBunch ():
         self.star_rv.visible   = on_off
         self.planet_rv.visible = on_off
     
-    def big_rv_on_off (self, on_off):
+    def rv_big_on_off (self, on_off):
         self.star_rv_big.visible   = on_off
         self.planet_rv_big.visible = on_off
 
@@ -99,9 +100,11 @@ arr.v_on_off(OFF)
 
 
 
+
 # ===============================================================================
 #                          scene.title_anchor button
 # ===============================================================================
+
 
 
 
@@ -148,6 +151,11 @@ def run(b):
         # rv arrow
         if chk_rv.checked:
             arr.rv_on_off(ON)
+        
+        # big rv arrow
+        if chk_rv_big.checked:
+            arr.rv_on_off(OFF)
+            arr.rv_big_on_off(ON)
     
     else: 
         b.text = "Run"
@@ -178,6 +186,7 @@ def apply (b):
     lb.on_off(OFF)
     arr.v_on_off(OFF)
     arr.rv_on_off(OFF)
+    arr.rv_big_on_off(OFF)
 
     g1.delete()
     g2.delete()
@@ -194,7 +203,8 @@ def apply (b):
     star.mass   = sld_star_m.value
     planet.mass = sld_planet_m.value
     
-    center.pos = vec(star.pos.x  +  dist * planet.mass / (star.mass + planet.mass), 0, 0)
+    center_x = star.pos.x  +  dist * planet.mass / (star.mass + planet.mass)
+    center.pos = vec(center_x, 0, 0)
     light.pos = star.pos
     
     
@@ -220,6 +230,7 @@ button(text="Apply", pos=scene.title_anchor, bind=apply)
 
 
 
+
 # ===============================================================================
 #                                   setting
 # ===============================================================================
@@ -227,6 +238,7 @@ def put_text (text):
     wtext(pos=print_anchor, text=text)
 
 put_text('\n\n\n<b>setting</b>\n\n')
+
 
 
 
@@ -315,16 +327,16 @@ def set_rv_arrow_size (r):
 
     if r.checked:
         arr.rv_on_off(OFF)
-        arr.big_rv_on_off(ON)
+        arr.rv_big_on_off(ON)
         arr.RV_SCALE *= size
     
     else:
         arr.rv_on_off(ON)
-        arr.big_rv_on_off(OFF)
+        arr.rv_big_on_off(OFF)
         arr.RV_SCALE /= size
 
-chk_rv = checkbox(pos=print_anchor, text='radial velocity arrow      ', checked=DEFAULT, bind=set_rv_arrow)
-checkbox(pos=print_anchor, text='bigger', checked=DEFAULT, bind=set_rv_arrow_size)
+chk_rv     = checkbox(pos=print_anchor, text='radial velocity arrow      ', checked=DEFAULT, bind=set_rv_arrow)
+chk_rv_big = checkbox(pos=print_anchor, text='bigger',                      checked=DEFAULT, bind=set_rv_arrow_size)
 put_text('\n\n')
 
 
@@ -370,6 +382,7 @@ def sld_text (s):
 
 def ang_text (s):
     return '{:03.0f}'.format(s.value * s.ratio)
+
 
 
 
@@ -521,7 +534,7 @@ def eclipse ():
 
             S = 1/2 * (r1**2 * (theta1 - sin(theta1*2)) + r2**2 * (theta2 - sin(theta2*2)))
 
-    return pi * r1**2 - S
+    return (pi * r1**2) - S
 
 
 time = 0
