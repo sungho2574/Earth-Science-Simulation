@@ -9,14 +9,14 @@ scene.title  = "<b>revolution</b>\n\n"
 
 G = 6.7e-11
 
-수정수정수정수정수정수정수정수정수정수정수정수정수정수정수정수정수정수정
+ON  = True
+OFF = False
+
+
 
 # star / planet
-star   = sphere(pos=vec(-1e11, 0, 0),  radius=2e10, color=color.yellow, make_trail=True)
-planet = sphere(pos=vec(1.5e11, 0, 0), radius=1e10, color=color.white,  make_trail=True)
-
-star.mass   = 2e30
-planet.mass = 1e30
+star   = sphere(pos=vec(-1e11, 0, 0),  mass=2e30, radius=2e10, color=color.yellow, make_trail=True)
+planet = sphere(pos=vec(1.5e11, 0, 0), mass=1e30, radius=1e10, color=color.white,  make_trail=True)
 
 star.p   = vec(0, 0, -1e4) * star.mass
 planet.p = -star.p
@@ -24,35 +24,58 @@ planet.p = -star.p
 
 
 # visual effect
-star_to_planet = label(pos=vec(1e11, 3e11, 0), text="별-행성 거리: ",   height=15,              visible=False)
-cent_to_star   = label(pos=star.pos,           text="중심-별 거리: ",   height=15, yoffset=100, visible=False)
-cent_to_planet = label(pos=planet.pos,         text="중심-행성 거리: ", height=15, yoffset=100, visible=False)
+class LabelBunch ():
+    star_to_planet = label(pos=vec(1e11, 3e11, 0), text="별-행성 거리: ",   height=15,              visible=False)
+    cent_to_star   = label(pos=star.pos,           text="중심-별 거리: ",   height=15, yoffset=100, visible=False)
+    cent_to_planet = label(pos=planet.pos,         text="중심-행성 거리: ", height=15, yoffset=100, visible=False)
 
-star_v   = label(pos=star.pos,   text="속력: ", height=15, yoffset=70, visible=False)
-planet_v = label(pos=planet.pos, text="속력: ", height=15, yoffset=70, visible=False)
+    star_v   = label(pos=star.pos,   text="속력: ", height=15, yoffset=70, visible=False)
+    planet_v = label(pos=planet.pos, text="속력: ", height=15, yoffset=70, visible=False)
+
+    def on_off (self, on_off):
+        self.star_to_planet.visible = on_off
+        self.cent_to_star.visible   = on_off
+        self.cent_to_planet.visible = on_off
+        self.star_v.visible         = on_off
+        self.planet_v.visible       = on_off
+        
+lb = LabelBunch()
 
 light = local_light(pos=star.pos, color=star.color)
 center = sphere(pos=vec(-0.16e11, 0, 0), radius=0.3e10, color=color.yellow)
 
 
-
 # arrow
-star_v_arrow   = attach_arrow(star,   "p", scale=1e7/star.mass/2,   shaftwidth=0.3e10, headwidth=0.6e10, headlength=0.6e10, color=color.green)
-planet_v_arrow = attach_arrow(planet, "p", scale=1e7/planet.mass/2, shaftwidth=0.3e10, headwidth=0.6e10, headlength=0.6e10, color=color.green)
+class ArrowBunch ():
+    star_v   = attach_arrow(star,   "p", scale=1e7/star.mass/2,   shaftwidth=0.3e10, headwidth=0.6e10, headlength=0.6e10, color=color.green)
+    planet_v = attach_arrow(planet, "p", scale=1e7/planet.mass/2, shaftwidth=0.3e10, headwidth=0.6e10, headlength=0.6e10, color=color.green)
 
-star_v_arrow.stop()
-planet_v_arrow.stop()
+    star_rv   = arrow(pos=vec(0, 0, 0), axis=vec(0, 0, 0), visible=False)
+    planet_rv = arrow(pos=vec(0, 0, 0), axis=vec(0, 0, 0), visible=False)
 
-star_rv_arrow   = arrow(pos=vec(0, 0, 0), axis=vec(0, 0, 0), visible=False)
-planet_rv_arrow = arrow(pos=vec(0, 0, 0), axis=vec(0, 0, 0), visible=False)
+    star_v0   = arrow(pos=vec(0, 0, 0), axis=vec(0, 0, 0), color=color.red, visible=False)
+    planet_v0 = arrow(pos=vec(0, 0, 0), axis=vec(0, 0, 0), color=color.red, visible=False)
 
-star_v0 = arrow(pos=vec(0, 0, 0), axis=vec(0, 0, 0), color=color.red, visible=False)
+    SCALE = 4e10
+    x_axis = arrow(pos=vec(0, 0, 0), axis=vec(SCALE, 0, 0),  color=color.white, visible=False)
+    y_axis = arrow(pos=vec(0, 0, 0), axis=vec(0, SCALE, 0),  color=color.white, visible=False)
+    z_axis = arrow(pos=vec(0, 0, 0), axis=vec(0, 0, -SCALE), color=color.red,   visible=False)
 
-SCALE = 4e10
-x_axis = arrow(pos=vec(0, 0, 0), axis=vec(SCALE, 0, 0),  color=color.white, visible=False)
-y_axis = arrow(pos=vec(0, 0, 0), axis=vec(0, SCALE, 0),  color=color.white, visible=False)
-z_axis = arrow(pos=vec(0, 0, 0), axis=vec(0, 0, -SCALE), color=color.red,   visible=False)
+    def v_on_off (self, on_off):
+        if on_off:
+            self.star_v.start()
+            self.planet_v.start()
+        
+        else:
+            self.star_v.stop()
+            self.planet_v.stop()
+    
+    def rv_on_off (self, on_off):
+        self.star_rv.visible   = on_off
+        self.planet_rv.visible = on_off
 
+arr = ArrowBunch()
+arr.v_on_off(OFF)
 
 
 # Exit
@@ -76,42 +99,28 @@ running = True
 
 def run(b):
     global running
-    global star_v0
+    global lb
+    global arr
     
-    global star_to_planet 
-    global cent_to_star   
-    global cent_to_planet         
-    global star_v
-    global planet_v
-    
-    global star_v_arrow
-    global planet_v_arrow
-    global star_rv_arrow
-    global planet_rv_arrow
     
     running = not running
     
     if running:
         b.text = "Pause"
-        star_v0.visible = False
+        arr.star_v0.visible   = False
+        arr.planet_v0.visible = False
         
         # label
         if chk_label.checked:
-            star_to_planet.visible = True
-            cent_to_star.visible   = True
-            cent_to_planet.visible = True
-            star_v.visible         = True
-            planet_v.visible       = True
+            lb.on_off(ON)
         
         # v arrow
         if chk_v.checked:
-            star_v_arrow.start()
-            planet_v_arrow.start()
+            arr.v_on_off(ON)
         
         # rv arrow
         if chk_rv.checked:
-            star_rv_arrow.visible   = True
-            planet_rv_arrow.visible = True
+            arr.rv_on_off(ON)
     
     else: 
         b.text = "Run"
@@ -131,35 +140,17 @@ def set_v (v, ang):
 
 def apply (b):
     global running
-    global star_to_planet 
-    global cent_to_star   
-    global cent_to_planet         
-    global star_v
-    global planet_v
-    
-    global star_v_arrow
-    global planet_v_arrow
-    global star_rv_arrow
-    global planet_rv_arrow
+    global lb    
+    global arr
     
     
     # erase prior star system
     star.clear_trail()
     planet.clear_trail()
     
-    star_to_planet.visible = False
-    cent_to_star.visible   = False
-    cent_to_planet.visible = False
-    star_v.visible         = False
-    planet_v.visible       = False
-    
-    star_v_arrow.visible    = False
-    planet_v_arrow.visible  = False
-    star_rv_arrow.visible   = False
-    planet_rv_arrow.visible = False
-    
-    star_v_arrow.stop()
-    planet_v_arrow.stop()
+    lb.on_off(OFF)
+    arr.v_on_off(OFF)
+    arr.rv_on_off(OFF)
 
     g1.delete()
     g2.delete()
@@ -181,16 +172,23 @@ def apply (b):
     
     
     # set v
-    star.p   = set_v(sld_star_v.value, sld_star_ang.value)     * star.mass
-    planet.p = set_v(sld_planet_v.value, sld_planet_ang.value) * planet.mass
+    star_v   = set_v(sld_star_v.value, sld_star_ang.value)
+    planet_v = set_v(sld_planet_v.value, sld_planet_ang.value)
+
+    star.p   = star_v   * star.mass
+    planet.p = planet_v * planet.mass
         
     
     # apply v arrow
     SCALE = 1e7/2
     if not running:
-        star_v0.visible = True
-        star_v0.pos     = star.pos
-        star_v0.axis    = vec(x, 0, z) * SCALE
+        arr.star_v0.visible = True
+        arr.star_v0.pos     = star.pos
+        arr.star_v0.axis    = star_v * SCALE
+
+        arr.planet_v0.visible = True
+        arr.planet_v0.pos     = planet.pos
+        arr.planet_v0.axis    = planet_v * SCALE
 
 button(text="Apply", pos=scene.title_anchor, bind=apply)
 
@@ -228,25 +226,13 @@ scene.append_to_caption('\n\n')
 DEFAULT = False
 
 def set_label(r):
-    global star_to_planet 
-    global cent_to_star   
-    global cent_to_planet         
-    global star_v   
-    global planet_v
+    global lb
     
     if r.checked:
-        star_to_planet.visible = True
-        cent_to_star.visible   = True
-        cent_to_planet.visible = True
-        star_v.visible         = True
-        planet_v.visible       = True
+        lb.on_off(ON)
 
     else:
-        star_to_planet.visible = False
-        cent_to_star.visible   = False
-        cent_to_planet.visible = False
-        star_v.visible         = False
-        planet_v.visible       = False
+        lb.on_off(OFF)
 
 chk_label = checkbox(text='label', checked=DEFAULT, bind=set_label)
 
@@ -260,16 +246,13 @@ scene.append_to_caption('\n\n')
 DEFAULT = False
 
 def set_v_arrow(r):
-    global star_v_arrow
-    global planet_v_arrow
+    global arr
 
     if r.checked:
-        star_v_arrow.start()
-        planet_v_arrow.start()
+        arr.v_on_off(ON)
 
     else:
-        star_v_arrow.stop()
-        planet_v_arrow.stop()
+        arr.v_on_off(OFF)
     
 chk_v = checkbox(text='velocity arrow', checked=DEFAULT, bind=set_v_arrow)
 
@@ -294,16 +277,13 @@ def draw_raial_v (ball, arrow):
         arrow.color = color.red
 
 def set_rv_arrow(r):
-    global star_rv_arrow
-    global planet_rv_arrow
+    global arr
 
     if r.checked:
-        star_rv_arrow.visible   = True
-        planet_rv_arrow.visible = True
+        arr.rv_on_off(ON)
 
     else:
-        star_rv_arrow.visible  = False
-        planet_rv_arrow.visible = False
+        arr.rv_on_off(OFF)
 
 def set_rv_arrow_size (r):
     global SCALE
@@ -329,14 +309,14 @@ DEFAULT = False
 
 def set_coor_axis (r):
     if r.checked:
-        x_axis.visible = True
-        y_axis.visible = True
-        z_axis.visible = True
+        arr.x_axis.visible = True
+        arr.y_axis.visible = True
+        arr.z_axis.visible = True
     
     else:
-        x_axis.visible = False
-        y_axis.visible = False
-        z_axis.visible = False
+        arr.x_axis.visible = False
+        arr.y_axis.visible = False
+        arr.z_axis.visible = False
 
 checkbox(text='coordinate axis', checked=DEFAULT, bind=set_coor_axis)
 
@@ -397,7 +377,7 @@ scene.append_to_caption('planet:\t\tv\t= ')
 def set_planet_v (s):
     wt_planet_v.text = '{:e}'.format(s.value/1000*3600)
 
-sld_planet_v = slider(min=MIN, max=MAX, value=VAL2, length=220, bind=set_planet_v, right=15, disabled=True)
+sld_planet_v = slider(min=MIN, max=MAX, value=VAL2, length=220, bind=set_planet_v, right=15)
 wt_planet_v = wtext(text='{:e}'.format(sld_planet_v.value/1000*3600))
 scene.append_to_caption(' km/h')
 
@@ -431,7 +411,7 @@ scene.append_to_caption('\t\t\t\t\tang\t= ')
 def set_planet_ang (s):
     wt_planet_ang.text = '{:03.0f}'.format(s.value)
 
-sld_planet_ang = slider(min=MIN, max=MAX, step=STEP, value=VAL2, length=220, bind=set_planet_ang, right=15, disabled=True)
+sld_planet_ang = slider(min=MIN, max=MAX, step=STEP, value=VAL2, length=220, bind=set_planet_ang, right=15)
 wt_planet_ang = wtext(text='{:03.0f}'.format(sld_planet_ang.value))
 scene.append_to_caption(' degree')
 
@@ -583,23 +563,23 @@ while True:
         c_to_s = center.pos - star.pos
         c_to_p = center.pos - planet.pos
 
-        star_to_planet.text = '별-행성 거리: {:e}'.format(s_to_p.mag)
-        cent_to_star.text   = '중심-별 거리: {:e}'.format(c_to_s.mag)
-        cent_to_planet.text = '중심-행성 거리: {:e}'.format(c_to_p.mag)
+        lb.star_to_planet.text = '별-행성 거리: {:e}'.format(s_to_p.mag)
+        lb.cent_to_star.text   = '중심-별 거리: {:e}'.format(c_to_s.mag)
+        lb.cent_to_planet.text = '중심-행성 거리: {:e}'.format(c_to_p.mag)
         
-        star_v.text   = '속력: {:e}'.format(mag(star.p/star.mass))
-        planet_v.text = '속력: {:e}'.format(mag(planet.p/planet.mass))
+        lb.star_v.text   = '속력: {:e}'.format(mag(star.p/star.mass))
+        lb.planet_v.text = '속력: {:e}'.format(mag(planet.p/planet.mass))
 
-        cent_to_star.pos   = star.pos
-        cent_to_planet.pos = planet.pos
+        lb.cent_to_star.pos   = star.pos
+        lb.cent_to_planet.pos = planet.pos
 
-        star_v.pos   = star.pos
-        planet_v.pos = planet.pos
+        lb.star_v.pos   = star.pos
+        lb.planet_v.pos = planet.pos
         
         
         # arrow
-        draw_raial_v(star,   star_rv_arrow)
-        draw_raial_v(planet, planet_rv_arrow)        
+        draw_raial_v(star,   arr.star_rv)
+        draw_raial_v(planet, arr.planet_rv)        
         
         
         # graph
