@@ -1,7 +1,13 @@
 #GlowScript 3.2 VPython
 
+# for vsc
+# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 from vpython import *
 from vpython.no_notebook import stop_server
+print_anchor = scene.caption_anchor
+# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+
+
 
 scene.width  = 800
 scene.height = 400
@@ -80,6 +86,12 @@ class ArrowBunch ():
 
 arr = ArrowBunch()
 arr.v_on_off(OFF)
+
+
+
+# ===============================================================================
+#                          scene.title_anchor button
+# ===============================================================================
 
 
 
@@ -198,10 +210,13 @@ button(text="Apply", pos=scene.title_anchor, bind=apply)
 
 
 
-
-# setting
 # ===============================================================================
-scene.append_to_caption('<b>setting</b>\n\n')
+#                                   setting
+# ===============================================================================
+def put_text (text):
+    wtext(pos=print_anchor, text=text)
+
+put_text('\n\n\n<b>setting</b>\n\n')
 
 
 
@@ -212,15 +227,13 @@ MAX = 1000
 VAL = 100
 speed = VAL
 
-scene.append_to_caption('speed: ')
-
 def set_speed (s):
     global speed
     speed = s.value
 
-slider(min=MIN, max=MAX, value=VAL, length=220, bind=set_speed, right=15)
-
-scene.append_to_caption('\n\n')
+put_text('speed: ')
+slider(pos=print_anchor, min=MIN, max=MAX, value=VAL, length=220, bind=set_speed, right=15)
+put_text('\n\n')
 
 
 
@@ -238,9 +251,8 @@ def set_label(r):
     else:
         lb.on_off(OFF)
 
-chk_label = checkbox(text='label', checked=DEFAULT, bind=set_label)
-
-scene.append_to_caption('\n\n')
+chk_label = checkbox(pos=print_anchor, text='label', checked=DEFAULT, bind=set_label)
+put_text('\n\n')
 
 
 
@@ -258,9 +270,8 @@ def set_v_arrow(r):
     else:
         arr.v_on_off(OFF)
     
-chk_v = checkbox(text='velocity arrow', checked=DEFAULT, bind=set_v_arrow)
-
-scene.append_to_caption('\n\n')
+chk_v = checkbox(pos=print_anchor, text='velocity arrow', checked=DEFAULT, bind=set_v_arrow)
+put_text('\n\n')
 
 
 
@@ -297,11 +308,9 @@ def set_rv_arrow_size (r):
     else:
         arr.RV_SCALE = SCALE
 
-chk_rv = checkbox(text='radial velocity arrow      ', checked=DEFAULT, bind=set_rv_arrow)
-
-checkbox(text='bigger', checked=DEFAULT, bind=set_rv_arrow_size)
-
-scene.append_to_caption('\n\n')
+chk_rv = checkbox(pos=print_anchor, text='radial velocity arrow      ', checked=DEFAULT, bind=set_rv_arrow)
+checkbox(pos=print_anchor, text='bigger', checked=DEFAULT, bind=set_rv_arrow_size)
+put_text('\n\n')
 
 
 
@@ -321,16 +330,16 @@ def set_coor_axis (r):
         arr.y_axis.visible = False
         arr.z_axis.visible = False
 
-checkbox(text='coordinate axis', checked=DEFAULT, bind=set_coor_axis)
-
-scene.append_to_caption('\n\n\n')
-
+checkbox(pos=print_anchor, text='coordinate axis', checked=DEFAULT, bind=set_coor_axis)
+put_text('\n\n\n')
 
 
 
-# star and planet
+
 # ===============================================================================
-scene.append_to_caption('<b>new star system</b>\n\n')
+#                              star and planet
+# ===============================================================================
+put_text('<b>new star system</b>\n\n')
 
 def connect_sld_text (sld, wt):
     sld.conn_text = wt
@@ -356,14 +365,11 @@ MAX  = 4e11
 STEP = 0.1e11
 VAL  = 2.5e11
 
-scene.append_to_caption('distance: ')
-
-sld_dist = slider(min=MIN, max=MAX, step=STEP, value=VAL, length=220, bind=set_sld_text, right=15, ratio=1/1000)
-wt_dist = wtext(text=sld_text(sld_dist))
+put_text('distance: ')
+sld_dist = slider(pos=print_anchor, min=MIN, max=MAX, step=STEP, value=VAL, length=220, bind=set_sld_text, right=15, ratio=1/1000)
+wt_dist = wtext(pos=print_anchor, text=sld_text(sld_dist))
 connect_sld_text(sld_dist, wt_dist)
-
-scene.append_to_caption(' km')
-scene.append_to_caption('\n\n')
+put_text(' km\n\n')
 
 
 
@@ -376,25 +382,18 @@ VAL1 = 1e4
 VAL2 = 1e4 * 2
 
 
-scene.append_to_caption('star:\t\tv\t= ')
-
-sld_star_v = slider(min=MIN, max=MAX, value=VAL1, length=220, bind=set_sld_text, right=15, ratio=1/1000*3600)
-wt_star_v = wtext(text=sld_text(sld_star_v))
+put_text('star:\t\tv\t= ')
+sld_star_v = slider(pos=print_anchor, min=MIN, max=MAX, value=VAL1, length=220, bind=set_sld_text, right=15, ratio=1/1000*3600)
+wt_star_v = wtext(pos=print_anchor, text=sld_text(sld_star_v))
 connect_sld_text(sld_star_v, wt_star_v)
-
-scene.append_to_caption(' km/h')
-scene.append_to_caption('\t\t')
+put_text(' km/h\t\t')
 
 
-
-scene.append_to_caption('planet:\t\tv\t= ')
-
-sld_planet_v = slider(min=MIN, max=MAX, value=VAL2, length=220, bind=set_sld_text, right=15, ratio=1/1000*3600)
-wt_planet_v = wtext(text=sld_text(sld_planet_v))
+put_text('planet:\t\tv\t= ')
+sld_planet_v = slider(pos=print_anchor, min=MIN, max=MAX, value=VAL2, length=220, bind=set_sld_text, right=15, ratio=1/1000*3600)
+wt_planet_v = wtext(pos=print_anchor, text=sld_text(sld_planet_v))
 connect_sld_text(sld_planet_v, wt_planet_v)
-
-scene.append_to_caption(' km/h')
-scene.append_to_caption('\n\n')
+put_text(' km/h\n\n')
 
 
 
@@ -407,25 +406,18 @@ STEP = 1
 VAL1 = 0
 VAL2 = 180
 
-scene.append_to_caption('\t\tang\t= ')
-
-sld_star_ang = slider(min=MIN, max=MAX, step=STEP, value=VAL1, length=220, bind=set_ang_text, right=15, ratio=1)
-wt_star_ang = wtext(text=ang_text(sld_star_ang))
+put_text('\t\tang\t= ')
+sld_star_ang = slider(pos=print_anchor, min=MIN, max=MAX, step=STEP, value=VAL1, length=220, bind=set_ang_text, right=15, ratio=1)
+wt_star_ang = wtext(pos=print_anchor, text=ang_text(sld_star_ang))
 connect_sld_text(sld_star_ang, wt_star_ang)
-
-scene.append_to_caption(' degree')
-scene.append_to_caption('\t\t')
+put_text(' degree\t\t\t\t\t\t\t')
 
 
-
-scene.append_to_caption('\t\t\t\t\tang\t= ')
-
-sld_planet_ang = slider(min=MIN, max=MAX, step=STEP, value=VAL2, length=220, bind=set_ang_text, right=15, ratio=1)
-wt_planet_ang = wtext(text=ang_text(sld_planet_ang))
-connect_sld_text(sld_planet_ang, wt_star_ang)
-
-scene.append_to_caption(' degree')
-scene.append_to_caption('\n\n')
+put_text('ang\t= ')
+sld_planet_ang = slider(pos=print_anchor, min=MIN, max=MAX, step=STEP, value=VAL2, length=220, bind=set_ang_text, right=15, ratio=1)
+wt_planet_ang = wtext(pos=print_anchor, text=ang_text(sld_planet_ang))
+connect_sld_text(sld_planet_ang, wt_planet_ang)
+put_text(' degree\n\n')
 
 
 
@@ -438,24 +430,18 @@ STEP = 0.1e30
 VAL1 = 2e30
 VAL2 = 1e30
 
-scene.append_to_caption('\t\tm\t= ')
-
-sld_star_m = slider(min=MIN, max=MAX, step=STEP, value=VAL1, length=220, bind=set_sld_text, right=15, ratio=1/1000)
-wt_star_m = wtext(text=sld_text(sld_star_m))
+put_text('\t\tm\t= ')
+sld_star_m = slider(pos=print_anchor, min=MIN, max=MAX, step=STEP, value=VAL1, length=220, bind=set_sld_text, right=15, ratio=1/1000)
+wt_star_m = wtext(pos=print_anchor, text=sld_text(sld_star_m))
 connect_sld_text(sld_star_m, wt_star_m)
-
-scene.append_to_caption(' Ton')
-scene.append_to_caption('\t\t')
+put_text(' Ton\t\t\t\t\t')
 
 
-scene.append_to_caption('\t\t\tm\t= ')
-
-sld_planet_m = slider(min=MIN, max=MAX, step=STEP, value=VAL2, length=220, bind=set_sld_text, right=15, ratio=1/1000)
-wt_planet_m = wtext(text=sld_text(sld_planet_m))
+put_text('m\t= ')
+sld_planet_m = slider(pos=print_anchor, min=MIN, max=MAX, step=STEP, value=VAL2, length=220, bind=set_sld_text, right=15, ratio=1/1000)
+wt_planet_m = wtext(pos=print_anchor, text=sld_text(sld_planet_m))
 connect_sld_text(sld_planet_m, wt_planet_m)
-
-scene.append_to_caption(' Ton')
-scene.append_to_caption('\n\n')
+put_text(' Ton\n\n')
 
 
 
@@ -468,30 +454,24 @@ STEP = 0.1e10
 VAL1 = 2e10
 VAL2 = 1e10
 
-scene.append_to_caption('\t\tr\t= ')
-
-sld_star_r = slider(min=MIN, max=MAX, step=STEP, value=VAL1, length=220, bind=set_sld_text, right=15, ratio=1/1000)
-wt_star_r = wtext(text=sld_text(sld_star_r))
+put_text('\t\tr\t= ')
+sld_star_r = slider(pos=print_anchor, min=MIN, max=MAX, step=STEP, value=VAL1, length=220, bind=set_sld_text, right=15, ratio=1/1000)
+wt_star_r = wtext(pos=print_anchor, text=sld_text(sld_star_r))
 connect_sld_text(sld_star_r, wt_star_r)
-
-scene.append_to_caption(' km')
-scene.append_to_caption('\t\t')
+put_text(' km\t\t\t\t\t\t')
 
 
-scene.append_to_caption('\t\t\t\tr\t= ')
-
-sld_planet_r = slider(min=MIN, max=MAX, step=STEP, value=VAL2, length=220, bind=set_sld_text, right=15, ratio=1/1000)
-wt_planet_r = wtext(text=sld_text(sld_planet_r))
+put_text('r\t= ')
+sld_planet_r = slider(pos=print_anchor, min=MIN, max=MAX, step=STEP, value=VAL2, length=220, bind=set_sld_text, right=15, ratio=1/1000)
+wt_planet_r = wtext(pos=print_anchor, text=sld_text(sld_planet_r))
 connect_sld_text(sld_planet_r, wt_planet_r)
-
-scene.append_to_caption(' km')
-scene.append_to_caption('\n\n')
-scene.append_to_caption('\n')
+put_text(' km\n\n\n')
 
 
 
 
-# graph
+# ===============================================================================
+#                                    graph
 # ===============================================================================
 def eclipse ():
     global star
@@ -599,6 +579,7 @@ while True:
         break
 
 
+# for vsc
 #stop_server()
 
 
