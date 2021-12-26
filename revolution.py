@@ -18,7 +18,7 @@ G = 6.7e-11
 ON  = True
 OFF = False
 
-SCALE = 1e7/2
+SCALE = 1e7/2           # use in star_v, star_rv initial, star_v0 etc
 
 
 
@@ -408,7 +408,6 @@ MIN = 0.5e4
 MAX = 3e4
 VAL1 = 1e4
 VAL2 = 1e4 * 2
-
 
 put_text('star:\t\tv\t= ')
 sld_star_v = slider(pos=print_anchor, min=MIN, max=MAX, value=VAL1, length=220, bind=set_sld_text, right=15, ratio=1/1000*3600)
