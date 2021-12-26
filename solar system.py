@@ -3,6 +3,9 @@
 from vpython import *
 from vpython.no_notebook import stop_server
 
+print_anchor = scene.caption_anchor
+
+
 scene.width  = 1000
 scene.height = 400
 scene.title = "<b>tangential v & radial v\n\n</b>"
@@ -70,6 +73,14 @@ button(text="Pause", pos=scene.title_anchor, bind=run)
 
 
 
+# ===============================================================================
+#                                   setting
+# ===============================================================================
+def put_text (text):
+    wtext(pos=print_anchor, text=text)
+
+
+
 
 # speed
 # ===============================================================================
@@ -78,15 +89,15 @@ MAX = 200
 VAL = 10
 speed = VAL
 
-scene.append_to_caption('\nspeed: ')
+put_text('\nspeed: ')
 
 def set_speed (s):
     global speed
     speed = s.value
 
-slider(min=MIN, max=MAX, value=VAL, length=220, bind=set_speed, right=15)
+slider(pos=print_anchor, min=MIN, max=MAX, value=VAL, length=220, bind=set_speed, right=15)
 
-scene.append_to_caption('\n\n')
+put_text('\n\n')
 
 
 
@@ -101,7 +112,7 @@ end_planet   = 0
 
 def set_aim (r):
     global start_checked
-    global end_hecked
+    global end_checked
 
     id = int(r.text) - 1
 
@@ -111,7 +122,7 @@ def set_aim (r):
     else:
         end_checked = id
 
-def set_reset (b):
+def apply (b):
     global start_planet
     global end_planet
 
@@ -125,24 +136,31 @@ def set_reset (b):
     g1.delete()
     g2.delete()
 
+
+
 # start
-scene.append_to_caption('start:\t\t')
+put_text('start:\t\t')
 
+start_radios = []
 for i in range(PLANET_NUM):
-    radio(text='{:}        '.format(i+1), checked=False, bind=set_aim, name='start')
+    start_radios.append(radio(pos=print_anchor, text='{:}        '.format(i+1), checked=False, bind=set_aim, name='start'))
 
-scene.append_to_caption('\n\n')
+put_text('\n\n')
 
 
 # end
-scene.append_to_caption('end:\t\t\t')
+put_text('end:\t\t\t')
 
+end_radios = []
 for i in range(PLANET_NUM):
-    radio(text='{:}        '.format(i+1), checked=False, bind=set_aim, name='end')
+    end_radios.append(radio(pos=print_anchor, text='{:}        '.format(i+1), checked=False, bind=set_aim, name='end'))
+
+start_radios[0].checked = True
+end_radios[0].checked   = True
 
 
-button(text='Apply', bind=set_reset)
-scene.append_to_caption('\n\n\n')
+button(pos=print_anchor, text='Apply', bind=apply)
+put_text('\n\n\n')
 
 
 
