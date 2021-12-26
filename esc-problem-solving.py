@@ -12,6 +12,7 @@ kpc = 3e+16         # 1 kpc  =  3.085e+16 km
 # sun / planets
 
 
+
 class Ball:
     def __init__(self, orbit_r, init_theta, rot_v, color):         # (, km, degree(azimuth), )
         self.orbit_r  = orbit_r
