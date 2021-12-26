@@ -12,7 +12,7 @@ G = 6.7e-11
 
 
 # sun / planets
-sun   = sphere(pos=vec(0, 0, 0), radius=2e10, mass=2e30, color=color.red)
+sun   = sphere(pos=vec(0, 0, 0), radius=2e10, m=2e30, color=color.red)
 
 PLANET_NUM = 5
 planets = []
@@ -26,7 +26,7 @@ m = [1e30, 5e30, 10e30, 1e10, 10e10]
 v = [3e4, 2e4, 1.4e4, 1.6e4, 1.7e4]
 
 for i in range(PLANET_NUM):
-    planets.append(sphere(pos=vec(x[i], 0, 0), radius=r[i], mass=m[i], p=vec(0, 0, -v[i])*m[i], color=color.white, make_trail = True))    
+    planets.append(sphere(pos=vec(x[i], 0, 0), radius=r[i], m=m[i], p=vec(0, 0, -v[i])*m[i], color=color.white, make_trail = True))    
 
 
 
@@ -99,81 +99,49 @@ end_checked   = 0
 start_planet = 0
 end_planet   = 0
 
-def set_start (r):
-    global chb_start
+def set_aim (r):
     global start_checked
+    global end_hecked
 
-    checked = []
-    for c in chb_start:
-        if c.checked:
-            checked.append(True)
-        
-        else:
-            checked.append(False)
+    id = int(r.text) - 1
+
+    if r.name == 'start':
+        start_checked = id
     
-    checked[start_checked] = False
+    else:
+        end_checked = id
 
-    for i, c in enumerate(checked):
-        chb_start[i].checked = c
-        
-        if c:
-            start_checked = i
-
-def set_end ():
-    global chb_end
-    global end_checked
-
-    checked = []
-    for c in chb_end:
-        if c.checked:
-            checked.append(True)
-        
-        else:
-            checked.append(False)
-    
-    checked[end_checked] = False
-
-    for i, c in enumerate(checked):
-        chb_end[i].checked = c
-        
-        if c:
-            end_checked = i
-
-def set_aim (b):
+def set_reset (b):
     global start_planet
     global end_planet
 
+    # apply when the button pushed
     start_planet = start_checked
     end_planet   = end_checked
-
+ 
     global time
     time = 0
     
     g1.delete()
     g2.delete()
 
-
 # start
 scene.append_to_caption('start:\t\t')
 
-chb_start = []
-for i in range(5):
-    chb_start.append(radio(text='{:}        '.format(i+1), checked=False, bind=set_start))
+for i in range(PLANET_NUM):
+    radio(text='{:}        '.format(i+1), checked=False, bind=set_aim, name='start')
 
-chb_start[0].checked = True
 scene.append_to_caption('\n\n')
 
 
 # end
 scene.append_to_caption('end:\t\t\t')
 
-chb_end = []
-for i in range(5):
-    chb_end.append(radio(text='{:}        '.format(i+1), checked=False, bind=set_end))
+for i in range(PLANET_NUM):
+    radio(text='{:}        '.format(i+1), checked=False, bind=set_aim, name='end')
 
-chb_end[0].checked = True
 
-button(text='Apply', bind=set_aim)
+button(text='Apply', bind=set_reset)
 scene.append_to_caption('\n\n\n')
 
 
@@ -182,8 +150,8 @@ scene.append_to_caption('\n\n\n')
 # graph
 # ===============================================================================
 def rt_v ():
-    s = planets[start_planet].p / planets[start_planet].mass
-    e = planets[end_planet].p / planets[end_planet].mass
+    s = planets[start_planet].p / planets[start_planet].m
+    e = planets[end_planet].p / planets[end_planet].m
     r_axis = planets[end_planet].pos - planets[start_planet].pos        # radial velocity basis axis
 
     v = e - s                                               # relative velocity
@@ -217,10 +185,10 @@ while True:
     if running:
         for p in planets:
             r = sun.pos - p.pos 
-            F = G * sun.mass * p.mass * r.hat / mag2(r)
+            F = G * sun.m * p.m * r.hat / mag2(r)
 
             p.p += F*dt
-            p.pos += (p.p/p.mass) * dt
+            p.pos += (p.p/p.m) * dt
         
 
         # arrow
