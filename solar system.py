@@ -1,9 +1,12 @@
 #GlowScript 3.2 VPython
 
+# for vsc
+# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 from vpython import *
 from vpython.no_notebook import stop_server
-
 print_anchor = scene.caption_anchor
+# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+
 
 
 scene.width  = 1000
@@ -15,7 +18,7 @@ G = 6.7e-11
 
 
 # sun / planets
-sun   = sphere(pos=vec(0, 0, 0), radius=2e10, m=2e30, color=color.red)
+sun = sphere(pos=vec(0, 0, 0), radius=2e10, m=2e30, color=color.red)
 
 PLANET_NUM = 5
 planets = []
@@ -73,11 +76,14 @@ button(text="Pause", pos=scene.title_anchor, bind=run)
 
 
 
+
 # ===============================================================================
 #                                   setting
 # ===============================================================================
 def put_text (text):
     wtext(pos=print_anchor, text=text)
+
+put_text('\n<b>setting</b>\n')
 
 
 
@@ -89,14 +95,12 @@ MAX = 200
 VAL = 10
 speed = VAL
 
-put_text('\nspeed: ')
-
 def set_speed (s):
     global speed
     speed = s.value
 
+put_text('\nspeed: ')
 slider(pos=print_anchor, min=MIN, max=MAX, value=VAL, length=220, bind=set_speed, right=15)
-
 put_text('\n\n')
 
 
@@ -115,27 +119,35 @@ def set_aim (r):
     global end_checked
 
     id = int(r.text) - 1
+    chk = [False for i in range(PLANET_NUM)]
+    chk[id] = True
 
-    if r.name == 'start':
+    if r.name[0] == 's':
         start_checked = id
+
+        for i in range(len(chk)):
+            start_radios[i].checked = chk[i]
     
     else:
         end_checked = id
 
+        for i in range(len(chk)):
+            end_radios[i].checked = chk[i]
+
 def apply (b):
+    global time
     global start_planet
     global end_planet
 
     # apply when the button pushed
     start_planet = start_checked
     end_planet   = end_checked
- 
-    global time
+    
+    # reset graph
     time = 0
     
     g1.delete()
     g2.delete()
-
 
 
 # start
@@ -143,7 +155,7 @@ put_text('start:\t\t')
 
 start_radios = []
 for i in range(PLANET_NUM):
-    start_radios.append(radio(pos=print_anchor, text='{:}        '.format(i+1), checked=False, bind=set_aim, name='start'))
+    start_radios.append(radio(pos=print_anchor, text='{:}        '.format(i+1), checked=False, bind=set_aim, name='s' + str(i)))
 
 put_text('\n\n')
 
@@ -153,41 +165,41 @@ put_text('end:\t\t\t')
 
 end_radios = []
 for i in range(PLANET_NUM):
-    end_radios.append(radio(pos=print_anchor, text='{:}        '.format(i+1), checked=False, bind=set_aim, name='end'))
+    end_radios.append(radio(pos=print_anchor, text='{:}        '.format(i+1), checked=False, bind=set_aim, name='e' + str(i)))
+
+button(pos=print_anchor, text='Apply', bind=apply)
+put_text('\n\n\n')
 
 start_radios[0].checked = True
 end_radios[0].checked   = True
 
 
-button(pos=print_anchor, text='Apply', bind=apply)
-put_text('\n\n\n')
 
 
-
-
-# graph
+# ===============================================================================
+#                                    graph
 # ===============================================================================
 def rt_v ():
     s = planets[start_planet].p / planets[start_planet].m
     e = planets[end_planet].p / planets[end_planet].m
     r_axis = planets[end_planet].pos - planets[start_planet].pos        # radial velocity basis axis
 
-    v = e - s                                               # relative velocity
+    v = e - s                                                           # relative velocity
     
     radial_v = dot(v, r_axis.norm())
 
-    t_axis = vec(-r_axis.z, 0, r_axis.x)                    # tangential velocity basis axis (ccw)
+    t_axis = vec(-r_axis.z, 0, r_axis.x)                                # tangential velocity basis axis (ccw)
     tangential_v = v - radial_v*r_axis.norm()          
-    tangential_v = dot(tangential_v, t_axis.norm())         # caculate t_v on t_axis
+    tangential_v = dot(tangential_v, t_axis.norm())                     # caculate t_v on t_axis
 
     return tangential_v, radial_v
 
 time = 0
 
-f1 = graph(width=600, height=200, title='tangential velocity')
+f1 = graph(width=600, height=200, title='radial velocity')
 g1 = gcurve(graph=f1, color=color.red)
 
-f2 = graph(width=600, height=200, title='radial velocity')
+f2 = graph(width=600, height=200, title='tangential velocity')
 g2 = gcurve(graph=f2, color=color.blue)
 
 
@@ -201,12 +213,13 @@ while True:
     rate(speed)
 
     if running:
-        for p in planets:
-            r = sun.pos - p.pos 
-            F = G * sun.m * p.m * r.hat / mag2(r)
+        # move
+        for pln in planets:
+            r = sun.pos - pln.pos 
+            F = G * sun.m * pln.m * r.hat / mag2(r)
 
-            p.p += F*dt
-            p.pos += (p.p/p.m) * dt
+            pln.p += F*dt
+            pln.pos += (pln.p/pln.m) * dt
         
 
         # arrow
@@ -217,12 +230,15 @@ while True:
         # graph
         tv, rv = rt_v()
         
-        g1.plot(time, tv)
-        g2.plot(time, rv)
+        g1.plot(time, rv)
+        g2.plot(time, tv)
         
         time += 1
+
 
     if (exit == True):
         break
 
-stop_server()
+
+# for vsc
+# stop_server()
