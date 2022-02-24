@@ -231,134 +231,155 @@ button(text="Apply", pos=scene.title_anchor, bind=apply)
 
 
 
-# ===============================================================================
-#                                   setting
-# ===============================================================================
-def put_text (text):
-    wtext(pos=print_anchor, text=text)
 
-put_text('\n\n\n<b>setting</b>\n\n')
+class Setting ():
+
+    def __init__(self):
+        self.put_text('\n\n\n<b>setting</b>\n\n')
 
 
 
-
-# speed
-# ===============================================================================
-MIN = 5
-MAX = 1000
-VAL = 100
-speed = VAL
-
-def set_speed (s):
-    global speed
-    speed = s.value
-
-put_text('speed: ')
-slider(pos=print_anchor, min=MIN, max=MAX, value=VAL, length=220, bind=set_speed, right=15)
-put_text('\n\n')
+    def put_text (text):
+        wtext(pos=print_anchor, text=text)
 
 
 
+    # speed
+    # ===============================================================================
+    def set_speed (s):
+        global speed
+        speed = s.value
 
-# label
-# ===============================================================================
-DEFAULT = False
 
-def set_label(r):
-    global lb
+
+    def speed (self):
+        MIN = 5
+        MAX = 1000
+        VAL = 100
+
+        self.put_text('speed: ')
+        slider(pos=print_anchor, min=MIN, max=MAX, value=VAL, length=220, bind=self.set_speed, right=15)
+        self.put_text('\n\n')
+
+
+    # label
+    # ===============================================================================
+
+    def set_label(r):
+        global lb
+        
+        if r.checked:
+            lb.on_off(ON)
+
+        else:
+            lb.on_off(OFF)
     
-    if r.checked:
-        lb.on_off(ON)
 
-    else:
-        lb.on_off(OFF)
+    def label (self):
+        DEFAULT = False
 
-chk_label = checkbox(pos=print_anchor, text='label', checked=DEFAULT, bind=set_label)
-put_text('\n\n')
+        chk_label = checkbox(pos=print_anchor, text='label', checked=DEFAULT, bind=set_label)
+        self.put_text('\n\n')
 
 
 
 
-# velocity arrow
-# ===============================================================================
-DEFAULT = False
+    # velocity arrow
+    # ===============================================================================
 
-def set_v_arrow(r):
-    global arr
+    def set_v_arrow(r):
+        global arr
 
-    if r.checked:
-        arr.v_on_off(ON)
+        if r.checked:
+            arr.v_on_off(ON)
 
-    else:
-        arr.v_on_off(OFF)
+        else:
+            arr.v_on_off(OFF)
     
-chk_v = checkbox(pos=print_anchor, text='velocity arrow', checked=DEFAULT, bind=set_v_arrow)
-put_text('\n\n')
 
+    def velocity_arrow (self):
+        DEFAULT = False
+            
+        chk_v = checkbox(pos=print_anchor, text='velocity arrow', checked=DEFAULT, bind=self.set_v_arrow)
+        self.put_text('\n\n')
 
-
-
-# radial velocity arrow
-# ===============================================================================
-DEFAULT = False
-
-def draw_raial_v (ball, arrow):
-    arrow.pos = ball.pos
-    arrow.axis = vec(0, 0, ball.p.z/ball.mass) * arr.RV_SCALE
-
-    if (arrow.axis.z > 0):
-        arrow.color = color.blue
     
-    else:
-        arrow.color = color.red
 
-def set_rv_arrow(r):
-    global arr
 
-    if r.checked:
-        arr.rv_on_off(ON)
 
-    else:
-        arr.rv_on_off(OFF)
 
-def set_rv_arrow_size (r):
-    global arr
-    size = 7
+    # radial velocity arrow
+    # ===============================================================================
 
-    if r.checked:
-        arr.rv_on_off(OFF)
-        arr.rv_big_on_off(ON)
-        arr.RV_SCALE *= size
+    def draw_raial_v (ball, arrow):
+        arrow.pos = ball.pos
+        arrow.axis = vec(0, 0, ball.p.z/ball.mass) * arr.RV_SCALE
+
+        if (arrow.axis.z > 0):
+            arrow.color = color.blue
+        
+        else:
+            arrow.color = color.red
+
+    def set_rv_arrow(r):
+        global arr
+
+        if r.checked:
+            arr.rv_on_off(ON)
+
+        else:
+            arr.rv_on_off(OFF)
+
+    def set_rv_arrow_size (r):
+        global arr
+        size = 7
+
+        if r.checked:
+            arr.rv_on_off(OFF)
+            arr.rv_big_on_off(ON)
+            arr.RV_SCALE *= size
+        
+        else:
+            arr.rv_on_off(ON)
+            arr.rv_big_on_off(OFF)
+            arr.RV_SCALE /= size
+
+    def radial_velocity_arrow (self):
+        DEFAULT = False
+
+        chk_rv     = checkbox(pos=print_anchor, text='radial velocity arrow      ', checked=DEFAULT, bind=self.set_rv_arrow)
+        chk_rv_big = checkbox(pos=print_anchor, text='bigger',                      checked=DEFAULT, bind=self.set_rv_arrow_size)
+        self.put_text('\n\n')
+
+
+
+
+    # coordinate axis
+    # ===============================================================================
+
+    def set_coor_axis (r):
+        if r.checked:
+            arr.x_axis.visible = True
+            arr.y_axis.visible = True
+            arr.z_axis.visible = True
+        
+        else:
+            arr.x_axis.visible = False
+            arr.y_axis.visible = False
+            arr.z_axis.visible = False
     
-    else:
-        arr.rv_on_off(ON)
-        arr.rv_big_on_off(OFF)
-        arr.RV_SCALE /= size
-
-chk_rv     = checkbox(pos=print_anchor, text='radial velocity arrow      ', checked=DEFAULT, bind=set_rv_arrow)
-chk_rv_big = checkbox(pos=print_anchor, text='bigger',                      checked=DEFAULT, bind=set_rv_arrow_size)
-put_text('\n\n')
-
-
-
-
-# coordinate axis
-# ===============================================================================
-DEFAULT = False
-
-def set_coor_axis (r):
-    if r.checked:
-        arr.x_axis.visible = True
-        arr.y_axis.visible = True
-        arr.z_axis.visible = True
     
-    else:
-        arr.x_axis.visible = False
-        arr.y_axis.visible = False
-        arr.z_axis.visible = False
+    def coordinate_axis (self):
+        DEFAULT = False
 
-checkbox(pos=print_anchor, text='coordinate axis', checked=DEFAULT, bind=set_coor_axis)
-put_text('\n\n\n')
+        checkbox(pos=print_anchor, text='coordinate axis', checked=DEFAULT, bind=self.set_coor_axis)
+        self.put_text('\n\n\n')
+
+
+
+
+
+
 
 
 
